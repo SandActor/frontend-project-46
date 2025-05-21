@@ -10,7 +10,7 @@ const formatValue = (value, depth) => {
   const bracketIndent = ' '.repeat(indentSize - 4);
 
   const lines = Object.entries(value).map(
-    ([key, val]) => `${currentIndent}${key}: ${formatValue(val, depth + 1)}`
+    ([key, val]) => `${currentIndent}${key}: ${formatValue(val, depth + 1)}`,
   );
 
   return `{\n${lines.join('\n')}\n${bracketIndent}}`;
@@ -26,6 +26,7 @@ const buildStylishLines = (nodes, depth = 1) => {
         return `${indent}- ${node.key}: ${formatValue(node.value, depth + 1)}`;
       case 'unchanged':
         return `${indent}  ${node.key}: ${formatValue(node.value, depth + 1)}`;
+
       case 'changed':
         return [
           `${indent}- ${node.key}: ${formatValue(node.oldValue, depth + 1)}`,

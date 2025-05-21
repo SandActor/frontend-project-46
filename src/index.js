@@ -1,21 +1,14 @@
-import { readFileSync } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import _ from 'lodash';
-import yaml from 'js-yaml';
-import getFormatter from './formatters/index.js';
+const { readFileSync } = require('fs');
+const path = require('path');
+const _ = require('lodash');
+const yaml = require('js-yaml');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const getFormatter = require('./formatters/index');
 
 const getFixturePath = (filename) => {
   const testPath = path.join(__dirname, '../__tests__/__fixtures__', filename);
-  try {
-    readFileSync(testPath);
-    return testPath;
-  } catch {
-    return path.resolve(process.cwd(), filename);
-  }
+  readFileSync(testPath);
+  return testPath;
 };
 
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
@@ -36,7 +29,7 @@ const parse = (filepath) => {
 
 const buildTree = (obj1, obj2) => {
   const keys = _.union(_.keys(obj1), _.keys(obj2)).sort();
-  
+
   return keys.map((key) => {
     if (!_.has(obj2, key)) {
       return { key, type: 'removed', value: obj1[key] };
@@ -57,6 +50,19 @@ const buildTree = (obj1, obj2) => {
       newValue: obj2[key],
     };
   });
+};
+
+const formatValue = (value, depth) => {
+  if (!_.isPlainObject(value)) {
+    return value;
+  }
+
+  const indent = ' '.repeat(4 * depth);
+  const lines = Object.entries(value).map(
+    ([key, val]) => `${indent}${key}: ${formatValue(val, depth + 1)}`,
+  );
+
+  return `{\n${lines.join('\n')}\n${' '.repeat(4 * (depth - 1))}}`;
 };
 
 const formatStylish = (tree, depth = 1) => {
@@ -80,28 +86,21 @@ const formatStylish = (tree, depth = 1) => {
         throw new Error(`Unknown node type: ${node.type}`);
     }
   });
-  
+
   return `{\n${lines.join('\n')}\n${' '.repeat(4 * (depth - 1))}}`;
 };
 
-const formatValue = (value, depth) => {
-  if (!_.isPlainObject(value)) {
-    return value;
-  }
-  
-  const indent = ' '.repeat(4 * depth);
-  const lines = Object.entries(value).map(
-    ([key, val]) => `${indent}${key}: ${formatValue(val, depth + 1)}`
-  );
-  
-  return `{\n${lines.join('\n')}\n${' '.repeat(4 * (depth - 1))}}`;
-};
-
-export default function genDiff(filepath1, filepath2, formatName = 'stylish') {
+function genDiff(filepath1, filepath2, formatName = 'stylish') {
   const data1 = parse(filepath1);
   const data2 = parse(filepath2);
   const diffTree = buildTree(data1, data2);
+
+  if (formatName === 'stylish') {
+    return formatStylish(diffTree);
+  }
+
   const format = getFormatter(formatName);
-  
   return format(diffTree);
 }
+
+module.exports = genDiff;

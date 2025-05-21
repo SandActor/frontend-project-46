@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const formatValue = (value) => {
   if (_.isPlainObject(value) || Array.isArray(value)) {
     return '[complex value]';
@@ -13,7 +15,7 @@ const buildPath = (path, key) => (path ? `${path}.${key}` : key);
 const formatPlain = (tree, parentPath = '') => {
   const lines = tree.flatMap((node) => {
     const currentPath = buildPath(parentPath, node.key);
-    
+
     switch (node.type) {
       case 'added':
         return `Property '${currentPath}' was added with value: ${formatValue(node.value)}`;

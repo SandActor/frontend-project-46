@@ -4,3 +4,19 @@ extends:
 env:
   node: true
   jest: true
+rules:
+  import/extensions: 
+    - error
+    - ignorePackages: true
+  import/order:
+    - error
+    - groups:
+        - builtin
+        - external
+        - internal
+        - parent
+        - sibling
+        - index
+  no-trailing-spaces: error
+  eol-last: ["error", "always"]
+  comma-dangle: ["error", "always-multiline"]
