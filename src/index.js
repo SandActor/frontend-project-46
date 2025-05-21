@@ -1,40 +1,108 @@
-import fs from 'fs';
+import { readFileSync } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import _ from 'lodash';
+import yaml from 'js-yaml';
 
-const getAbsolutePath = (filepath) => path.resolve(process.cwd(), filepath);
-const readFile = (filepath) => fs.readFileSync(getAbsolutePath(filepath), 'utf-8');
-const parse = (data) => JSON.parse(data);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const buildDiff = (data1, data2) => {
-  const keys1 = Object.keys(data1);
-  const keys2 = Object.keys(data2);
-  const sortedKeys = _.sortBy(_.union(keys1, keys2));
-
-  return sortedKeys.map((key) => {
-    if (!_.has(data1, key)) {
-      return `  + ${key}: ${data2[key]}`;
-    }
-    if (!_.has(data2, key)) {
-      return `  - ${key}: ${data1[key]}`;
-    }
-    if (_.isEqual(data1[key], data2[key])) {
-      return `    ${key}: ${data1[key]}`;
-    }
-    return [
-      `  - ${key}: ${data1[key]}`,
-      `  + ${key}: ${data2[key]}`
-    ].join('\n');
-  }).join('\n');
+const getFixturePath = (filename) => {
+  const testPath = path.join(__dirname, '../__tests__/__fixtures__', filename);
+  try {
+    readFileSync(testPath);
+    return testPath;
+  } catch {
+    return path.resolve(process.cwd(), filename);
+  }
 };
 
-export default function genDiff(filepath1, filepath2) {
-  const file1Content = readFile(filepath1);
-  const file2Content = readFile(filepath2);
+const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
+
+const getFileFormat = (filepath) => path.extname(filepath).toLowerCase();
+
+const parsers = {
+  '.json': (content) => JSON.parse(content),
+  '.yaml': (content) => yaml.load(content),
+  '.yml': (content) => yaml.load(content),
+};
+
+const parse = (filepath) => {
+  const content = readFile(filepath);
+  const format = getFileFormat(filepath);
+  return parsers[format](content);
+};
+
+const buildTree = (obj1, obj2) => {
+  const keys = _.union(_.keys(obj1), _.keys(obj2)).sort();
   
-  const data1 = parse(file1Content);
-  const data2 = parse(file2Content);
+  return keys.map((key) => {
+    if (!_.has(obj2, key)) {
+      return { key, type: 'removed', value: obj1[key] };
+    }
+    if (!_.has(obj1, key)) {
+      return { key, type: 'added', value: obj2[key] };
+    }
+    if (_.isPlainObject(obj1[key]) && _.isPlainObject(obj2[key])) {
+      return { key, type: 'nested', children: buildTree(obj1[key], obj2[key]) };
+    }
+    if (_.isEqual(obj1[key], obj2[key])) {
+      return { key, type: 'unchanged', value: obj1[key] };
+    }
+    return {
+      key,
+      type: 'changed',
+      oldValue: obj1[key],
+      newValue: obj2[key],
+    };
+  });
+};
+
+const formatStylish = (tree, depth = 1) => {
+  const indent = ' '.repeat(4 * depth - 2);
+  const lines = tree.map((node) => {
+    switch (node.type) {
+      case 'added':
+        return `${indent}+ ${node.key}: ${formatValue(node.value, depth)}`;
+      case 'removed':
+        return `${indent}- ${node.key}: ${formatValue(node.value, depth)}`;
+      case 'unchanged':
+        return `${indent}  ${node.key}: ${formatValue(node.value, depth)}`;
+      case 'changed':
+        return [
+          `${indent}- ${node.key}: ${formatValue(node.oldValue, depth)}`,
+          `${indent}+ ${node.key}: ${formatValue(node.newValue, depth)}`,
+        ].join('\n');
+      case 'nested':
+        return `${indent}  ${node.key}: ${formatStylish(node.children, depth + 1)}`;
+      default:
+        throw new Error(`Unknown node type: ${node.type}`);
+    }
+  });
   
-  const diff = buildDiff(data1, data2);
-  return `{\n${diff}\n}`;
+  return `{\n${lines.join('\n')}\n${' '.repeat(4 * (depth - 1))}}`;
+};
+
+const formatValue = (value, depth) => {
+  if (!_.isPlainObject(value)) {
+    return value;
+  }
+  
+  const indent = ' '.repeat(4 * depth);
+  const lines = Object.entries(value).map(
+    ([key, val]) => `${indent}${key}: ${formatValue(val, depth + 1)}`
+  );
+  
+  return `{\n${lines.join('\n')}\n${' '.repeat(4 * (depth - 1))}}`;
+};
+
+export default function genDiff(filepath1, filepath2, formatName = 'stylish') {
+  const data1 = parse(filepath1);
+  const data2 = parse(filepath2);
+  const diffTree = buildTree(data1, data2);
+  
+  if (formatName === 'stylish') {
+    return formatStylish(diffTree);
+  }
+  throw new Error(`Unknown format: ${formatName}`);
 }
