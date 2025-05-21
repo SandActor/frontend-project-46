@@ -5,9 +5,7 @@ env:
   node: true
   jest: true
 rules:
-  import/extensions: 
-    - error
-    - ignorePackages: true
+  import/extensions: ["error", "ignorePackages"]
   import/order:
     - error
     - groups:

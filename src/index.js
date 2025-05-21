@@ -3,7 +3,7 @@ const path = require('path');
 const _ = require('lodash');
 const yaml = require('js-yaml');
 
-const getFormatter = require('./formatters/index');
+const getFormatter = require('./formatters/index.js');
 
 const getFixturePath = (filename) => {
   const testPath = path.join(__dirname, '../__tests__/__fixtures__', filename);
