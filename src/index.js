@@ -103,4 +103,4 @@ function genDiff(filepath1, filepath2, formatName = 'stylish') {
   return format(diffTree);
 }
 
-module.exports = genDiff;
+export default genDiff;
