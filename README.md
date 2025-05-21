@@ -83,3 +83,40 @@ Property 'group3' was added with value: [complex value]
 Available formats:
 - `stylish` (default) - nested visual representation
 - `plain` - flat list of changes
+
+```bash
+gendiff --format json filepath1.json filepath2.json
+```
+
+Example output:
+
+```json
+[
+  {
+    "key": "common",
+    "type": "nested",
+    "children": [
+      {
+        "key": "follow",
+        "type": "added",
+        "value": false
+      },
+      {
+        "key": "setting1",
+        "type": "unchanged",
+        "value": "Value 1"
+      },
+      {
+        "key": "setting2",
+        "type": "removed",
+        "value": 200
+      }
+    ]
+  }
+]
+```
+
+Available formats:
+- `stylish` (default) - nested visual representation
+- `plain` - flat list of changes
+- `json` - machine-readable JSON output

@@ -40,3 +40,16 @@ describe('Plain format', () => {
     expect(genDiff(file1, file2, 'plain')).toEqual(expected);
   });
 });
+
+describe('JSON format', () => {
+  test('should format diff as JSON', () => {
+    const file1 = getFixturePath('file1.json');
+    const file2 = getFixturePath('file2.json');
+    const result = genDiff(file1, file2, 'json');
+    
+    expect(() => JSON.parse(result)).not.toThrow();
+    expect(typeof result).toBe('string');
+    expect(result).toMatch(/^{/);
+    expect(result).toMatch(/}$/);
+  });
+});
