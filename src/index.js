@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import _ from 'lodash';
 import yaml from 'js-yaml';
+import getFormatter from './formatters/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -100,9 +101,7 @@ export default function genDiff(filepath1, filepath2, formatName = 'stylish') {
   const data1 = parse(filepath1);
   const data2 = parse(filepath2);
   const diffTree = buildTree(data1, data2);
+  const format = getFormatter(formatName);
   
-  if (formatName === 'stylish') {
-    return formatStylish(diffTree);
-  }
-  throw new Error(`Unknown format: ${formatName}`);
+  return format(diffTree);
 }
