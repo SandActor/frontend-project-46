@@ -2,10 +2,13 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import genDiff from '../src/index.js';
 
-const { filenames } = require.main;
-const dirname = path.dirname(filenames);
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const getFixturePath = (filename) => path.join(dirname, '..', '__fixtures__', filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8').trim();
 
 describe('gendiff', () => {
