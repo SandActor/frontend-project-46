@@ -5,7 +5,7 @@ import yaml from 'js-yaml';
 import getFormatter from './formatters/index.js';
 
 const getFixturePath = (filename) => {
-  const testPath = path.join('./__tests__/__fixtures__', filename);
+  const testPath = path.join(filename);
   readFileSync(testPath);
   return testPath;
 };
