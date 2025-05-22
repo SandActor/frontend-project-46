@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import genDiff from '../src/index.js';
 
-const getFixturePath = (filename) => path.join('../__fixtures__', filename);
+const getFixturePath = (filename) => path.join('..', filename);
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8').trim();
 
 describe('gendiff', () => {
