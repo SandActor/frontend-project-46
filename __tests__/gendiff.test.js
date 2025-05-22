@@ -3,8 +3,7 @@ import path from 'path';
 import genDiff from '../src/index.js';
 
 const getFixturePath = (filename) => {
-  console.log(path.join('', filename));
-  path.join('', filename);
+  path.join('./', filename);
 };
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8').trim();
 
