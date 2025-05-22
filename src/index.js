@@ -4,13 +4,7 @@ import _ from 'lodash';
 import yaml from 'js-yaml';
 import getFormatter from './formatters/index.js';
 
-const getFixturePath = (filename) => {
-  const testPath = path.join('', filename);
-  readFileSync(testPath);
-  return testPath;
-};
-
-const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
+const readFile = (filename) => readFileSync(filename, 'utf-8');
 
 const getFileFormat = (filepath) => path.extname(filepath).toLowerCase();
 
