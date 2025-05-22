@@ -1,6 +1,6 @@
-const { readFileSync } = require('fs');
-const path = require('path');
-const genDiff = require('../src/index.js');
+import readFileSync from 'fs';
+import path from 'path';
+import genDiff from '../src/index.js';
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8').trim();
