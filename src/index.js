@@ -4,13 +4,10 @@ import _ from 'lodash';
 import yaml from 'js-yaml';
 import getFormatter from './formatters/index.js';
 
-const getFixturePath = (filename) => {
-  const testPath = path.join(path.dirname(filename), filename);
-  readFileSync(testPath);
-  return testPath;
+const readFile = (filepath) => {
+  const absolutePath = path.resolve(process.cwd(), filepath);
+  return readFileSync(absolutePath, 'utf-8');
 };
-
-const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
 
 const getFileFormat = (filepath) => path.extname(filepath).toLowerCase();
 
@@ -89,7 +86,7 @@ const formatStylish = (tree, depth = 1) => {
   return `{\n${lines.join('\n')}\n${' '.repeat(4 * (depth - 1))}}`;
 };
 
-function genDiff(filepath1, filepath2, formatName = 'stylish') {
+export default function genDiff(filepath1, filepath2, formatName = 'stylish') {
   const data1 = parse(filepath1);
   const data2 = parse(filepath2);
   const diffTree = buildTree(data1, data2);
@@ -101,5 +98,3 @@ function genDiff(filepath1, filepath2, formatName = 'stylish') {
   const format = getFormatter(formatName);
   return format(diffTree);
 }
-
-export default genDiff;
