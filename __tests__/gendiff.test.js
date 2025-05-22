@@ -1,7 +1,12 @@
 import { readFileSync } from 'fs';
+import path from 'path';
 import genDiff from '../src/index.js';
 
-const readFile = (filename) => readFileSync(filename, 'utf-8').trim();
+const getFixturePath = (filename) => {
+  console.log(path.join('', filename));
+  path.join('', filename);
+};
+const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8').trim();
 
 describe('gendiff', () => {
   test('should compare flat YAML files', () => {
