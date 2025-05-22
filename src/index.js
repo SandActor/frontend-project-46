@@ -1,9 +1,8 @@
-const { readFileSync } = require('fs');
-const path = require('path');
-const _ = require('lodash');
-const yaml = require('js-yaml');
-
-const getFormatter = require('./formatters/index.js');
+import { readFileSync } from 'fs';
+import path from 'path';
+import _ from 'lodash';
+import yaml from 'js-yaml';
+import getFormatter from './formatters/index.js';
 
 const getFixturePath = (filename) => {
   const testPath = path.join(__dirname, '../__tests__/__fixtures__', filename);
