@@ -7,12 +7,12 @@ const getExtention = (filename) => {
   const extention = splitName.slice(-1)
   const result = extention[0]
   return result
-};
+}
 const readFile = (filePath) => {
   const dirName = process.cwd(filePath)
   const fullPath = path.resolve(dirName, filePath)
   return fs.readFileSync(fullPath, 'utf-8')
-};
+}
 
 const compareAndSort = (obj1, obj2) => {
   const iter = (o1, o2, level) => {
@@ -64,4 +64,4 @@ const compareAndSort = (obj1, obj2) => {
   return iter(obj1, obj2, 1)
 }
 
-export { compareAndSort, getExtention, readFile };
+export { compareAndSort, getExtention, readFile }

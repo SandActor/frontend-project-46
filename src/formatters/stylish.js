@@ -19,12 +19,10 @@ const formatStylish = (diff, depth = 1) => {
   const statusIndent = baseIndent.slice(2)
 
   const lines = diff.map((node) => {
-    const { key, type } = node;
-    const formatNodeValue = (value) => (
-      type === 'nested' 
-        ? formatStylish(value, depth + 1)
-        : stringifyValue(value, indentSize, depth)
-    )
+    const { key, type } = node
+    const formatNodeValue = (value) => {
+      return type === 'nested' ? formatStylish(value, depth + 1) : stringifyValue(value, indentSize, depth)
+    }
 
     switch (type) {
       case 'added':
@@ -34,7 +32,7 @@ const formatStylish = (diff, depth = 1) => {
       case 'changed':
         return [
           `${statusIndent}- ${key}: ${formatNodeValue(node.oldValue)}`,
-          `${statusIndent}+ ${key}: ${formatNodeValue(node.value)}`
+          `${statusIndent}+ ${key}: ${formatNodeValue(node.value)}`,
         ].join('\n')
       case 'nested':
         return `${baseIndent}${key}: {\n${formatNodeValue(node.children)}\n${baseIndent}}`
