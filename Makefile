@@ -7,7 +7,7 @@ install:
 	$(NPM) install
 
 lint:
-	$(ESLINT) .
+	npx eslint .
 
 lint-fix:
 	$(ESLINT) --fix .
