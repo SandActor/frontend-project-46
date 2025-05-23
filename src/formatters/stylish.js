@@ -20,7 +20,7 @@ const formatStylish = (diff, depth = 1) => {
 
   const lines = diff.map((node) => {
     const { key, type } = node;
-    const formatNodeValue = (value) => { return type === 'nested' ? formatStylish(value, depth + 1) : stringifyValue(value, indentSize, depth); };
+    const formatNodeValue = (value) => { return type === 'nested' ? formatStylish(value, depth + 1) : stringifyValue(value, indentSize, depth) };
 
     switch (type) {
       case 'added':
@@ -42,6 +42,6 @@ const formatStylish = (diff, depth = 1) => {
   });
 
   return depth === 1 ? `{\n${lines.join('\n')}\n}` : lines.join('\n');
-}
+};
 
 export default formatStylish;

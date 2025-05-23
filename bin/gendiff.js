@@ -10,7 +10,7 @@ program
   .arguments('<filepath1> <filepath2>')
   .option('-f, --format <type>', 'output format(default: "stylish")')
   .action((filepath1, filepath2, option) => {
-    console.log(gendiff(filepath1, filepath2, option.format));
+    gendiff(filepath1, filepath2, option.format);
   });
 
 program.parse(process.argv);
