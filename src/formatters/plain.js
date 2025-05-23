@@ -1,38 +1,29 @@
-import _ from 'lodash';
-
-const formatValue = (value) => {
-  if (_.isPlainObject(value) || Array.isArray(value)) {
-    return '[complex value]';
-  }
-  if (typeof value === 'string') {
-    return `'${value}'`;
-  }
-  return value;
+const stringifyValue = (value) => {
+  if (value === null) return 'null';
+  if (typeof value === 'string') return `'${value}'`;
+  if (typeof value === 'object') return '[complex value]';
+  return String(value);
 };
 
-const buildPath = (path, key) => (path ? `${path}.${key}` : key);
-
-const formatPlain = (tree, parentPath = '') => {
-  const lines = tree.flatMap((node) => {
-    const currentPath = buildPath(parentPath, node.key);
+const formatPlain = (diff, parentPath = '') => {
+  const messages = diff.map((node) => {
+    const currentPath = parentPath ? `${parentPath}.${node.key}` : node.key;
 
     switch (node.type) {
       case 'added':
-        return `Property '${currentPath}' was added with value: ${formatValue(node.value)}`;
-      case 'removed':
+        return `Property '${currentPath}' was added with value: ${stringifyValue(node.value)}`;
+      case 'deleted':
         return `Property '${currentPath}' was removed`;
       case 'changed':
-        return `Property '${currentPath}' was updated. From ${formatValue(node.oldValue)} to ${formatValue(node.newValue)}`;
+        return `Property '${currentPath}' was updated. From ${stringifyValue(node.oldValue)} to ${stringifyValue(node.value)}`;
       case 'nested':
         return formatPlain(node.children, currentPath);
-      case 'unchanged':
-        return [];
       default:
-        throw new Error(`Unknown node type: ${node.type}`);
+        return null;
     }
   });
 
-  return lines.join('\n');
+  return messages.filter(Boolean).join('\n');
 };
 
 export default formatPlain;

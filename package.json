@@ -2,20 +2,9 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/SandActor/frontend-project-46/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/SandActor/frontend-project-46/actions)",
-  "main": "bin/gendiff.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "npm test -- --watch",
-    "test:coverage": "npm test -- --coverage",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ],
-    "testEnvironment": "jest-environment-node",
-    "transform": {}
+    "test": "jest"
   },
   "bin": {
     "gendiff": "bin/gendiff.js"

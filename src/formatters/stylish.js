@@ -1,45 +1,51 @@
-import _ from 'lodash';
+const stringifyValue = (value, indentSize, depth) => {
+  if (value === null) return 'null';
+  if (typeof value !== 'object') return String(value);
 
-const formatValue = (value, depth) => {
-  if (!_.isObject(value)) {
-    return String(value);
-  }
+  const currentIndent = ' '.repeat(depth * indentSize);
+  const innerIndent = ' '.repeat((depth + 1) * indentSize);
+  const entries = Object.entries(value);
 
-  const indentSize = depth * 4;
-  const currentIndent = ' '.repeat(indentSize);
-  const bracketIndent = ' '.repeat(indentSize - 4);
+  const lines = entries.map(([key, val]) => (
+    `${innerIndent}${key}: ${stringifyValue(val, indentSize, depth + 1)}`
+  ));
 
-  const lines = Object.entries(value).map(
-    ([key, val]) => `${currentIndent}${key}: ${formatValue(val, depth + 1)}`,
-  );
-
-  return `{\n${lines.join('\n')}\n${bracketIndent}}`;
+  return `{\n${lines.join('\n')}\n${currentIndent}}`;
 };
 
-const buildStylishLines = (nodes, depth = 1) => {
-  const indent = ' '.repeat(depth * 4 - 2);
-  const lines = nodes.map((node) => {
-    switch (node.type) {
-      case 'added':
-        return `${indent}+ ${node.key}: ${formatValue(node.value, depth + 1)}`;
-      case 'removed':
-        return `${indent}- ${node.key}: ${formatValue(node.value, depth + 1)}`;
-      case 'unchanged':
-        return `${indent}  ${node.key}: ${formatValue(node.value, depth + 1)}`;
+const formatStylish = (diff, depth = 1) => {
+  const indentSize = 4;
+  const baseIndent = ' '.repeat(depth * indentSize);
+  const statusIndent = baseIndent.slice(2);
 
+  const lines = diff.map((node) => {
+    const { key, type } = node;
+    const formatNodeValue = (value) => (
+      type === 'nested' 
+        ? formatStylish(value, depth + 1)
+        : stringifyValue(value, indentSize, depth)
+    );
+
+    switch (type) {
+      case 'added':
+        return `${statusIndent}+ ${key}: ${formatNodeValue(node.value)}`;
+      case 'deleted':
+        return `${statusIndent}- ${key}: ${formatNodeValue(node.value)}`;
       case 'changed':
         return [
-          `${indent}- ${node.key}: ${formatValue(node.oldValue, depth + 1)}`,
-          `${indent}+ ${node.key}: ${formatValue(node.newValue, depth + 1)}`,
+          `${statusIndent}- ${key}: ${formatNodeValue(node.oldValue)}`,
+          `${statusIndent}+ ${key}: ${formatNodeValue(node.value)}`
         ].join('\n');
       case 'nested':
-        return `${indent}  ${node.key}: ${buildStylishLines(node.children, depth + 1)}`;
+        return `${baseIndent}${key}: {\n${formatNodeValue(node.children)}\n${baseIndent}}`;
+      case 'unchanged':
+        return `${baseIndent}${key}: ${formatNodeValue(node.value)}`;
       default:
-        throw new Error(`Unknown node type: ${node.type}`);
+        return null;
     }
   });
 
-  return `{\n${lines.join('\n')}\n${' '.repeat(depth * 4 - 4)}}`;
+  return depth === 1 ? `{\n${lines.join('\n')}\n}` : lines.join('\n');
 };
 
-export default (diffTree) => buildStylishLines(diffTree);
+export default formatStylish;

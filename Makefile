@@ -1,10 +1,12 @@
-.PHONY: test lint
-
+install:
+	npm ci
+run:
+	bin/gendiff.js
+ publish:
+	npm publish --dry-run
+lint:
+	npx eslint .
 test:
 	npm test
-
-lint:
-	npm run lint
-
-ci:
-	npm ci && npm run lint && npm test
+test-coverage:
+	npm test -- --coverage --coverageProvider=v8
