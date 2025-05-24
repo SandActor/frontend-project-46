@@ -34,7 +34,7 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         uses: SonarSource/sonarqube-scan-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN1 }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           # Для SonarCloud:
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
