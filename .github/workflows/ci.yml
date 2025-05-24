@@ -44,17 +44,21 @@ jobs:
             -Dsonar.projectVersion=1.0
             -Dsonar.sources=src
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
       
       - name: Upload to Code Climate
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         run: |
+          # Download and install codeclimate reporter
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           
+          # Prepare build
           ./cc-test-reporter before-build
           
+          # Upload coverage
           ./cc-test-reporter after-build \
             --exit-code 0 \
             --coverage-input-type lcov \
-            --prefix $(pwd)
+            --prefix $(pwd) 
