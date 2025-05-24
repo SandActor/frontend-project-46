@@ -21,7 +21,7 @@ describe('stylish json', () => {
 
     const expectedOutput = readFile(expectedFilePath)
     const result = genDiff(filepath1, filepath2)
-    
+
     expect(result).toBe(expectedOutput)
   })
 })
