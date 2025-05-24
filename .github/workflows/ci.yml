@@ -49,6 +49,4 @@ jobs:
       - name: Code Climate Coverage
         uses: paambaati/codeclimate-action@v5.0.0
         env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        with:
-          coverageLocations: ${{ github.workspace }}/coverage/lcov.info:lcov
+          CC_TEST_REPORTER_ID: ${{ secrets.QLTY_COVERAGE_TOKEN }}
