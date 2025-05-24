@@ -1,8 +1,8 @@
 name: Node CI
 
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
 
 env:
   CI: true
@@ -17,23 +17,29 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+      
       - run: npm ci
       - run: npm run lint
-      - run: npm test
+      
+      - name: Run tests with coverage
+        run: npm test -- --coverage --coverageReporters=lcov --coverageDirectory=coverage
+      
       - name: SonarQube Scan
-        uses: paambaati/codeclimate-action@v5.0.0
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: SonarSource/sonarqube-scan-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN1 }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      
       - name: Code Climate Coverage
         uses: paambaati/codeclimate-action@v5.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
-          coverageCommand: npm test-coverage
-          debug: true
-        
+          coverageLocations: ${{ github.workspace }}/coverage/lcov.info:lcov
