@@ -22,9 +22,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: make install
-      - run: make lint
-      - run: make test
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v5.0.0
         env:
@@ -32,3 +32,4 @@ jobs:
         with:
           coverageCommand: make test-coverage
           debug: true
+        
