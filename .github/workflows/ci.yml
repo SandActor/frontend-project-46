@@ -26,9 +26,12 @@ jobs:
       - run: npm run lint
       - run: npm test
       - name: Test & publish code coverage
-        uses: SonarSource/sonarqube-scan-action@master
+        uses: paambaati/codeclimate-action@v5.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.SONAR_TOKEN1 }}
+        with:
+          coverageCommand: make test-coverage
+          debug: true
       - name: Code Climate Coverage
         uses: paambaati/codeclimate-action@v5.0.0
         env:
