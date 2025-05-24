@@ -22,12 +22,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@master
+      - run: make install
+      - run: make lint
+      - run: make test
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v5.0.0
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN1 }}
-          SONAR_HOST_URL: https://sonarcloud.io 
-        
+          CC_TEST_REPORTER_ID: ${{ secrets.SONAR_TOKEN1 }}
+        with:
+          coverageCommand: make test-coverage
+          debug: true
