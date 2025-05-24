@@ -5,10 +5,10 @@ import genDiff from '../src/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const getFixturePath = (filename) => { 
+const getFixturePath = (filename) => {
   return path.join(__dirname, '..', '__fixtures__', filename)
 }
-const readFile = (filepath) => { 
+const readFile = (filepath) => {
   return fs.readFileSync(filepath, 'utf-8')
 }
 
