@@ -9,17 +9,17 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.es2021
-      }
-    }
+        ...globals.es2021,
+      },
+    },
   },
   {
     files: ['**/*.{jsx}'],
     ...pluginReact.configs.recommended,
     settings: {
       react: {
-        version: 'detect'
-      }
-    }
+        version: 'detect',
+      },
+    },
   },
 ]

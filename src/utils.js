@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import path from 'path'
 import fs from 'fs'
+import { cwd } from 'process'
 
 const getExtention = (filename) => {
   const splitName = filename.split('.')
@@ -9,7 +10,7 @@ const getExtention = (filename) => {
   return result
 }
 const readFile = (filePath) => {
-  const dirName = process.cwd(filePath)
+  const dirName = cwd(filePath)
   const fullPath = path.resolve(dirName, filePath)
   return fs.readFileSync(fullPath, 'utf-8')
 }

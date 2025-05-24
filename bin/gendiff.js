@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
+import { argv } from 'process'
 import gendiff from '../src/index.js'
 
 const program = new Command()
@@ -13,4 +14,4 @@ program
     console.log(gendiff(filepath1, filepath2, option.format))
   })
 
-program.parse(process.argv)
+program.parse(argv)
