@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url'
 import path from 'path'
 import fs from 'fs'
-import genDiff from '../src/index.js'
+import genDiff from '../src/index'
 import { describe, test, expect } from '@jest/globals'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -13,23 +13,23 @@ const readFile = (filepath) => {
   return fs.readFileSync(filepath, 'utf-8')
 }
 
-describe('Stylish json', () => {
-  test('genDiff with different files', () => {
+describe('stylish json', () => {
+  test('genDiff with different files json', () => {
     const filepath1 = getFixturePath('file1.json')
     const filepath2 = getFixturePath('file2.json')
-    const expectedFilePath = getFixturePath('expected_nested.txt')
+    const expectedFilePath = getFixturePath('expected_stylish.txt')
 
     const expectedOutput = readFile(expectedFilePath)
     const result = genDiff(filepath1, filepath2)
-
+    
     expect(result).toBe(expectedOutput)
   })
 })
-describe('Stylish yml', () => {
-  test('genDiff with different files', () => {
+describe('stylish yml', () => {
+  test('genDiff with different files yml', () => {
     const filepath1 = getFixturePath('file1.yml')
     const filepath2 = getFixturePath('file2.yml')
-    const expectedFilePath = getFixturePath('expected_nested.txt')
+    const expectedFilePath = getFixturePath('expected_stylish.txt')
 
     const expectedOutput = readFile(expectedFilePath)
     const result = genDiff(filepath1, filepath2)
@@ -37,8 +37,8 @@ describe('Stylish yml', () => {
     expect(result).toBe(expectedOutput)
   })
 })
-describe('Plain', () => {
-  test('genDiff with different files', () => {
+describe('plain', () => {
+  test('genDiff with different files plain', () => {
     const filepath1 = getFixturePath('file1.json')
     const filepath2 = getFixturePath('file2.json')
     const expectedFilePath = getFixturePath('expected_plain.txt')
@@ -50,7 +50,7 @@ describe('Plain', () => {
   })
 })
 describe('json', () => {
-  test('genDiff with different files', () => {
+  test('genDiff with different files json', () => {
     const filepath1 = getFixturePath('file1.json')
     const filepath2 = getFixturePath('file2.json')
     const expectedFilePath = getFixturePath('expected_json.txt')
