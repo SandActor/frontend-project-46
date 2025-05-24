@@ -36,12 +36,10 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN1 }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          # Для SonarCloud:
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
         with:
-          # Указываем обязательные параметры проекта
           args: >
-            -Dsonar.projectKey=frontend-project-46
+            -Dsonar.projectKey=SandActor_frontend-project-46
             -Dsonar.projectName=frontend-project-46
             -Dsonar.projectVersion=1.0
             -Dsonar.sources=src
