@@ -1,7 +1,7 @@
 const INDENT_SIZE = 4
 
 const getIndent = (depth) => ' '.repeat(depth * INDENT_SIZE)
-const getStatusIndent = (depth) => ' '.repeat(depth * INDENT_SIZE - 2)
+const getStatusIndent = (depth) => ' '.repeat(depth * INDENT_SIZE)
 
 const stringifyValue = (value, depth = 0) => {
   if (value === null) return 'null'
