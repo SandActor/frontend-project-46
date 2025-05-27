@@ -15,7 +15,7 @@ const readFile = (filePath) => {
   return fs.readFileSync(fullPath, 'utf-8')
 }
 
-const compareAndSort = (obj1, obj2) => {
+const getTree = (obj1, obj2) => {
   const iter = (o1, o2, level) => {
     const unionObj = { ...o1, ...o2 }
     const sortedKeys = _.sortBy(Object.keys(unionObj))
@@ -65,4 +65,4 @@ const compareAndSort = (obj1, obj2) => {
   return iter(obj1, obj2, 1)
 }
 
-export { compareAndSort, getExtention, readFile }
+export { getTree, getExtention, readFile }
