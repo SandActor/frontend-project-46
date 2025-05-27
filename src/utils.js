@@ -5,64 +5,56 @@ import { cwd } from 'process'
 
 const getExtention = (filename) => {
   const splitName = filename.split('.')
-  const extention = splitName.slice(-1)
-  const result = extention[0]
-  return result
+  return splitName.at(-1)
 }
+
 const readFile = (filePath) => {
-  const dirName = cwd(filePath)
-  const fullPath = path.resolve(dirName, filePath)
+  const fullPath = path.resolve(cwd(), filePath)
   return fs.readFileSync(fullPath, 'utf-8')
 }
 
-const compareAndSort = (obj1, obj2) => {
-  const iter = (o1, o2, level) => {
-    const unionObj = { ...o1, ...o2 }
-    const sortedKeys = _.sortBy(Object.keys(unionObj))
+const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
 
-    return sortedKeys.map((key) => {
-      if (Object.hasOwn(o1, key) && !Object.hasOwn(o2, key)) {
-        return {
-          key,
-          type: 'deleted',
-          value: o1[key],
-          level,
-        }
-      }
-      if (!Object.hasOwn(o1, key) && Object.hasOwn(o2, key)) {
-        return {
-          key,
-          type: 'added',
-          value: o2[key],
-          level,
-        }
-      }
-      if (typeof o1[key] === 'object' && typeof o2[key] === 'object') {
-        return {
-          key,
-          type: 'nested',
-          children: iter(o1[key], o2[key], level + 1),
-          level,
-        }
-      }
-      if (o1[key] !== o2[key]) {
-        return {
-          key,
-          type: 'changed',
-          oldValue: o1[key],
-          value: o2[key],
-          level,
-        }
-      }
+const getTree = (obj1, obj2) => {
+  const unionObj = { ...obj1, ...obj2 }
+  const sortedKeys = _.sortBy(Object.keys(unionObj))
+
+  return sortedKeys.flatMap((key) => {
+    if (Object.hasOwn(obj1, key) && !Object.hasOwn(obj2, key)) {
       return {
         key,
-        type: 'unchanged',
-        value: o1[key],
-        level,
+        type: 'deleted',
+        value: obj1[key],
       }
-    })
-  }
-  return iter(obj1, obj2, 1)
+    }
+
+    if (!Object.hasOwn(obj1, key) && Object.hasOwn(obj2, key)) {
+      return {
+        key,
+        type: 'added',
+        value: obj2[key],
+      }
+    }
+
+    if (isObject(obj1[key]) && isObject(obj2[key])) {
+      return {
+        key,
+        type: 'nested',
+        children: getTree(obj1[key], obj2[key]),
+      }
+    }
+
+    if (obj1[key] !== obj2[key]) {
+      return {
+        key,
+        type: 'changed',
+        oldValue: obj1[key],
+        value: obj2[key],
+      }
+    }
+
+    return []
+  })
 }
 
-export { compareAndSort, getExtention, readFile }
+export { getTree, getExtention, readFile }

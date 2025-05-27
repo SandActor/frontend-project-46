@@ -5,22 +5,18 @@ const stringifyValue = (value) => {
   return String(value)
 }
 
+const formatters = {
+  added: (node, path) => `Property '${path}' was added with value: ${stringifyValue(node.value)}`,
+  deleted: (node, path) => `Property '${path}' was removed`,
+  changed: (node, path) => `Property '${path}' was updated. From ${stringifyValue(node.oldValue)} to ${stringifyValue(node.value)}`,
+  nested: (node, path) => formatPlain(node.children, path),
+  unchanged: () => null,
+}
+
 const formatPlain = (diff, parentPath = '') => {
   const messages = diff.map((node) => {
     const currentPath = parentPath ? `${parentPath}.${node.key}` : node.key
-
-    switch (node.type) {
-      case 'added':
-        return `Property '${currentPath}' was added with value: ${stringifyValue(node.value)}`
-      case 'deleted':
-        return `Property '${currentPath}' was removed`
-      case 'changed':
-        return `Property '${currentPath}' was updated. From ${stringifyValue(node.oldValue)} to ${stringifyValue(node.value)}`
-      case 'nested':
-        return formatPlain(node.children, currentPath)
-      default:
-        return null
-    }
+    return formatters[node.type]?.(node, currentPath) ?? null
   })
 
   return messages.filter(Boolean).join('\n')
