@@ -1,49 +1,49 @@
-const INDENT_SIZE = 4;
+const stringifyValue = (value, indentSize, depth) => {
+  if (value === null) return 'null'
+  if (typeof value !== 'object') return String(value)
 
-const getIndent = (depth) => ' '.repeat(depth * INDENT_SIZE);
-const getStatusIndent = (depth) => ' '.repeat(Math.max(0, depth * INDENT_SIZE - 2));
-
-const stringifyValue = (value, depth = 0) => {
-  if (value === null) return 'null';
-  if (typeof value !== 'object') return String(value);
-
-  const currentIndent = getIndent(depth);
-  const innerIndent = getIndent(depth + 1);
-  const entries = Object.entries(value);
+  const currentIndent = ' '.repeat(depth * indentSize)
+  const innerIndent = ' '.repeat((depth + 1) * indentSize)
+  const entries = Object.entries(value)
 
   const lines = entries.map(([key, val]) => (
-    `${innerIndent}${key}: ${stringifyValue(val, depth + 1)}`
-  ));
+    `${innerIndent}${key}: ${stringifyValue(val, indentSize, depth + 1)}`
+  ))
 
-  return `{\n${lines.join('\n')}\n${currentIndent}}`;
-};
+  return `{\n${lines.join('\n')}\n${currentIndent}}`
+}
 
-const formatNode = {
-  added: (node, depth) => `${getStatusIndent(depth)}+ ${node.key}: ${stringifyValue(node.value, depth)}`,
-  deleted: (node, depth) => `${getStatusIndent(depth)}- ${node.key}: ${stringifyValue(node.value, depth)}`,
-  changed: (node, depth) => [
-    `${getStatusIndent(depth)}- ${node.key}: ${stringifyValue(node.oldValue, depth)}`,
-    `${getStatusIndent(depth)}+ ${node.key}: ${stringifyValue(node.value, depth)}`,
-  ].join('\n'),
-  nested: (node, depth) => {
-    const indent = getIndent(depth);
-    return [
-      `${indent}${node.key}: {`,
-      formatStylish(node.children, depth + 1),
-      `${indent}}`
-    ].join('\n');
-  },
-  unchanged: (node, depth) => `${getIndent(depth)}${node.key}: ${stringifyValue(node.value, depth)}`
-};
+const formatStylish = (diff, depth = 1) => {
+  const indentSize = 4
+  const baseIndent = ' '.repeat(depth * indentSize)
+  const statusIndent = baseIndent.slice(2)
 
-const formatStylish = (diff, depth = 0) => {
-  const lines = diff.flatMap((node) => {
-    const formatted = formatNode[node.type]?.(node, depth);
-    return formatted ? [formatted] : [];
-  });
-  
-  const result = lines.join('\n');
-  return depth === 0 ? `{\n${result}\n}` : result;
-};
+  const lines = diff.map((node) => {
+    const { key, type } = node
+    const formatNodeValue = (value) => {
+      return type === 'nested' ? formatStylish(value, depth + 1) : stringifyValue(value, indentSize, depth)
+    }
 
-export default formatStylish;
+    switch (type) {
+      case 'added':
+        return `${statusIndent}+ ${key}: ${formatNodeValue(node.value)}`
+      case 'deleted':
+        return `${statusIndent}- ${key}: ${formatNodeValue(node.value)}`
+      case 'changed':
+        return [
+          `${statusIndent}- ${key}: ${formatNodeValue(node.oldValue)}`,
+          `${statusIndent}+ ${key}: ${formatNodeValue(node.value)}`,
+        ].join('\n')
+      case 'nested':
+        return `${baseIndent}${key}: {\n${formatNodeValue(node.children)}\n${baseIndent}}`
+      case 'unchanged':
+        return `${baseIndent}${key}: ${formatNodeValue(node.value)}`
+      default:
+        return null
+    }
+  })
+
+  return depth === 1 ? `{\n${lines.join('\n')}\n}` : lines.join('\n')
+}
+
+export default formatStylish
