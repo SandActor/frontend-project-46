@@ -1,7 +1,7 @@
 const INDENT_SIZE = 4
 
 const getIndent = (depth) => ' '.repeat(depth * INDENT_SIZE)
-const getStatusIndent = (depth) => ' '.repeat(depth * (INDENT_SIZE - 2))
+const getStatusIndent = (depth) => ' '.repeat(depth * INDENT_SIZE)
 
 const stringifyValue = (value, depth = 0) => {
   if (value === null) return 'null'
@@ -36,7 +36,7 @@ const formatNode = {
   unchanged: (node, depth) => `${getIndent(depth)}${node.key}: ${stringifyValue(node.value, depth)}`
 }
 
-const formatStylish = (diff, depth = 0) => {
+const formatStylish = (diff, depth = 1) => {
   const lines = diff.flatMap((node) => {
     const formatted = formatNode[node.type]?.(node, depth);
     return formatted ? [formatted] : []
