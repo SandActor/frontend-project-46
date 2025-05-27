@@ -1,7 +1,7 @@
 const INDENT_SIZE = 4
 
 const getIndent = (depth) => ' '.repeat(depth * INDENT_SIZE)
-const getStatusIndent = (depth) => ' '.repeat(depth * INDENT_SIZE)
+const getStatusIndent = (depth) => ' '.repeat(depth * (INDENT_SIZE - 2))
 
 const stringifyValue = (value, depth = 0) => {
   if (value === null) return 'null'
@@ -26,7 +26,7 @@ const formatNode = {
     `${getStatusIndent(depth)}+ ${node.key}: ${stringifyValue(node.value, depth)}`,
   ].join('\n'),
   nested: (node, depth) => {
-    const indent = getIndent(depth)
+    const indent = getIndent(depth);
     return [
       `${indent}${node.key}: {`,
       formatStylish(node.children, depth + 1),
@@ -37,9 +37,12 @@ const formatNode = {
 }
 
 const formatStylish = (diff, depth = 0) => {
-  const lines = diff.map((node) => formatNode[node.type]?.(node, depth) ?? null)
-  const result = lines.join('\n')
+  const lines = diff.flatMap((node) => {
+    const formatted = formatNode[node.type]?.(node, depth);
+    return formatted ? [formatted] : []
+  })
   
+  const result = lines.join('\n')
   return depth === 0 ? `{\n${result}\n}` : result
 }
 

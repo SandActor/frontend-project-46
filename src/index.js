@@ -1,6 +1,6 @@
-import { getTree, readFile, getExtention } from './utils.js'
-import parseFile from './parsers.js'
-import makeFormat from './formatters/index.js'
+import { getTree, readFile, getExtention } from './utils'
+import parseFile from './parsers'
+import makeFormat from './formatters/index'
 
 const gendiff = (filepath1, filepath2, format = 'stylish') => {
   const readFile1 = readFile(filepath1)
