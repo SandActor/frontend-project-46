@@ -1,7 +1,7 @@
 const INDENT_SIZE = 4
-const BASE_INDENT = ' '.repeat(INDENT_SIZE)
 
-const getIndent = (depth, offset = 0) => ' '.repeat(depth * INDENT_SIZE + offset)
+const getIndent = (depth) => ' '.repeat(depth * INDENT_SIZE)
+const getStatusIndent = (depth) => ' '.repeat(depth * INDENT_SIZE - 2)
 
 const stringifyValue = (value, depth = 0) => {
   if (value === null) return 'null'
@@ -19,11 +19,11 @@ const stringifyValue = (value, depth = 0) => {
 }
 
 const formatNode = {
-  added: (node, depth) => `${getIndent(depth, -2)}+ ${node.key}: ${stringifyValue(node.value, depth)}`,
-  deleted: (node, depth) => `${getIndent(depth, -2)}- ${node.key}: ${stringifyValue(node.value, depth)}`,
+  added: (node, depth) => `${getStatusIndent(depth)}+ ${node.key}: ${stringifyValue(node.value, depth)}`,
+  deleted: (node, depth) => `${getStatusIndent(depth)}- ${node.key}: ${stringifyValue(node.value, depth)}`,
   changed: (node, depth) => [
-    `${getIndent(depth, -2)}- ${node.key}: ${stringifyValue(node.oldValue, depth)}`,
-    `${getIndent(depth, -2)}+ ${node.key}: ${stringifyValue(node.value, depth)}`,
+    `${getStatusIndent(depth)}- ${node.key}: ${stringifyValue(node.oldValue, depth)}`,
+    `${getStatusIndent(depth)}+ ${node.key}: ${stringifyValue(node.value, depth)}`,
   ].join('\n'),
   nested: (node, depth) => {
     const indent = getIndent(depth)
