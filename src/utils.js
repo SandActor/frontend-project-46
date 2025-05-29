@@ -9,55 +9,60 @@ const getExtention = (filename) => {
   const result = extention[0]
   return result
 }
+
 const readFile = (filePath) => {
   const dirName = cwd(filePath)
   const fullPath = path.resolve(dirName, filePath)
   return fs.readFileSync(fullPath, 'utf-8')
 }
 
-const getTree = (obj1, obj2, level = 1) => {
-  const unionObj = { ...obj1, ...obj2 }
+const getTree = (data1, data2) => {
+  const unionObj = { ...data1, ...data2 }
   const sortedKeys = _.sortBy(Object.keys(unionObj))
 
   return sortedKeys.map((key) => {
-    if (Object.hasOwn(obj1, key) && !Object.hasOwn(obj2, key)) {
+    if (Object.hasOwn(data1, key) && !Object.hasOwn(data2, key)) {
       return {
         key,
         type: 'deleted',
-        value: obj1[key],
-        level,
+        value: data1[key],
       }
     }
-    if (!Object.hasOwn(obj1, key) && Object.hasOwn(obj2, key)) {
+
+    if (!Object.hasOwn(data1, key) && Object.hasOwn(data2, key)) {
       return {
         key,
         type: 'added',
-        value: obj2[key],
-        level,
+        value: data2[key],
       }
     }
-    if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+
+    if (
+      typeof data1[key] === 'object' &&
+      typeof data2[key] === 'object' &&
+      !Array.isArray(data1[key]) &&
+      !Array.isArray(data2[key])
+    ) {
       return {
         key,
         type: 'nested',
-        children: getTree(obj1[key], obj2[key], level + 1),
-        level,
+        children: getTree(data1[key], data2[key]),
       }
     }
-    if (obj1[key] !== obj2[key]) {
+
+    if (data1[key] !== data2[key]) {
       return {
         key,
         type: 'changed',
-        oldValue: obj1[key],
-        value: obj2[key],
-        level,
+        oldValue: data1[key],
+        value: data2[key],
       }
     }
+
     return {
       key,
       type: 'unchanged',
-      value: obj1[key],
-      level,
+      value: data1[key],
     }
   })
 }
