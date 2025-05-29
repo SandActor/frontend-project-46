@@ -37,12 +37,7 @@ const getTree = (data1, data2) => {
       }
     }
 
-    if (
-      typeof data1[key] === 'object' &&
-      typeof data2[key] === 'object' &&
-      !Array.isArray(data1[key]) &&
-      !Array.isArray(data2[key])
-    ) {
+    if (typeof data1[key] === 'object' && typeof data2[key] === 'object' && !Array.isArray(data1[key]) && !Array.isArray(data2[key])) {
       return {
         key,
         type: 'nested',
