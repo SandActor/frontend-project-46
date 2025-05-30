@@ -1,4 +1,5 @@
-import { getTree, readFile, getExtention } from './utils.js'
+import { readFile, getExtention } from './utils.js'
+import { getTree } from './getTree.js'
 import parseFile from './parsers.js'
 import makeFormat from './formatters/index.js'
 

@@ -10,16 +10,16 @@ const formatNode = {
   deleted: (node, path) => `Property '${path}' was removed`,
   changed: (node, path) => `Property '${path}' was updated. From ${stringifyValue(node.oldValue)} to ${stringifyValue(node.value)}`,
   nested: (node, path) => formatPlain(node.children, path),
-  unchanged: () => null,
+  unchanged: () => [],
 }
 
 const formatPlain = (diff, parentPath = '') => {
-  const lines = diff.map((node) => {
+  const lines = diff.flatMap((node) => {
     const currentPath = parentPath ? `${parentPath}.${node.key}` : node.key
     return formatNode[node.type]?.(node, currentPath)
   })
 
-  return lines.filter(Boolean).join('\n')
+  return lines.join('\n')
 }
 
 export default formatPlain
